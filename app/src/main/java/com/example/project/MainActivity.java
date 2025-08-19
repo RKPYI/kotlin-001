@@ -14,6 +14,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SessionManager session = new SessionManager(this);
+        if (!session.isLoggedIn()) {
+            // Not logged in -> go to login
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         btnProfile = findViewById(R.id.btnProfile);
@@ -24,7 +35,17 @@ public class MainActivity extends AppCompatActivity {
         btnProfile.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
 //        btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         btnReports.setOnClickListener(v -> startActivity(new Intent(this, ReportsActivity.class)));
-        btnLogout.setOnClickListener(v -> finish()); // close app
+//        btnLogout.setOnClickListener(v -> finish()); // close app
+        btnLogout.setOnClickListener(v -> {
+            SessionManager logoutManager = new SessionManager(this);
+            logoutManager.logout(); // clear SharedPreferences
+
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+        });
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setSelectedItemId(R.id.nav_dashboard); // Set current selected
